@@ -11,7 +11,7 @@ namespace WattsLeft
 
         // Settings with stock defaults as fallback
         public static double KerbinYearSeconds { get; private set; } = 9203545.0;
-        public static double ElectricityScale { get; private set; } = 1000.0;
+        public static double ElectricityScalar { get; private set; } = 1000.0;
 
         public static IReadOnlyList<WattsLeftIsotope> Isotopes
         {
@@ -62,18 +62,17 @@ namespace WattsLeft
                 Debug.LogWarning("[WattsLeft] Invalid or missing kerbinYearSeconds, using default: " + KerbinYearSeconds);
             }
 
-
             string rawScalar = node.GetValue("electricityScalar");
             if (rawScalar != null && double.TryParse(rawScalar, out double parsedScalar) && parsedScalar > 0.0)
             {
-                ElectricityScale = parsedScalar;
+                ElectricityScalar = parsedScalar;
             }
             else
             {
-                Debug.LogWarning("[WattsLeft] Invalid or missing electricityScalar, using default: " + ElectricityScale);
+                Debug.LogWarning("[WattsLeft] Invalid or missing electricityScalar, using default: " + ElectricityScalar);
             }
 
-            Debug.Log("[WattsLeft] Settings loaded — kerbinYearSeconds: " + KerbinYearSeconds + ", electricityScalar: " + ElectricityScale);
+            Debug.Log("[WattsLeft] Settings loaded — kerbinYearSeconds: " + KerbinYearSeconds + ", electricityScalar: " + ElectricityScalar);
         }
 
         private static void LoadIsotopes()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using UnityEngine;
 
 namespace WattsLeft
@@ -6,13 +7,20 @@ namespace WattsLeft
     [KSPModule("Watts Left RTG")]
     public class ModuleWattsLeftRTG : PartModule
     {
+        // editor info fields
+        [KSPField]
+        public double isotopeVolume = 1.0;
+
+        [KSPField]
+        public double infoOutputThreshold = 0.1;
+
         // status fields
         [KSPField(
             guiName = "Status",
             guiActive = true,
             guiActiveEditor = true,
             groupName = "WattsLeft",
-            groupDisplayName = "WattsLeft"
+            groupDisplayName = "RTG"
         )]
         public string statusDisplay = "Loaded";
 
@@ -21,7 +29,7 @@ namespace WattsLeft
             guiActive = true,
             guiActiveEditor = true,
             groupName = "WattsLeft",
-            groupDisplayName = "WattsLeft"
+            groupDisplayName = "RTG"
         )]
         public string currentOutputDisplay = "n/a";
 
@@ -80,7 +88,7 @@ namespace WattsLeft
                 return 0.0;
             }
 
-            return peakOutput * remainingFraction * WattsLeftConfig.ElectricityScale;
+            return peakOutput * remainingFraction * WattsLeftConfig.ElectricityScalar;
         }
 
         private double GetRemainingFraction()
@@ -175,6 +183,87 @@ namespace WattsLeft
             return electricChargePerSecond.ToString("0.##") + " EC/s";
         }
 
+        // editor helpers
+        private const double KerbinDaySeconds = 21600.0;
+
+        private double GetYearsUntilFraction(WattsLeftIsotope isotope, double fraction)
+        {
+            if (isotope == null || fraction <= 0.0 || fraction >= 1.0)
+            {
+                return 0.0;
+            }
+
+            return -isotope.HalfLife * Math.Log(fraction) / Math.Log(2.0);
+        }
+
+        private string FormatKerbinDuration(double years)
+        {
+            if (double.IsNaN(years) || double.IsInfinity(years) || years < 0.0)
+            {
+                return "n/a";
+            }
+
+            double seconds = years * WattsLeftConfig.KerbinYearSeconds;
+            double days = seconds / KerbinDaySeconds;
+
+            if (days < 1.0)
+            {
+                return (days * 6.0).ToString("0.#") + " hours";
+            }
+
+            if (years < 1.0)
+            {
+                return days.ToString("0.#") + " days";
+            }
+
+            if (years < 10.0)
+            {
+                return years.ToString("0.##") + " years";
+            }
+
+            return years.ToString("0.#") + " years";
+        }
+
+        private double CalculateInfoPeakOutput(WattsLeftIsotope isotope)
+        {
+            if (isotope == null)
+            {
+                return 0.0;
+            }
+
+            double density = GetResourceDensity(isotope.Name);
+
+            if (density <= 0.0)
+            {
+                return 0.0;
+            }
+
+            double fuelMass = isotopeVolume * density;
+            return isotope.PowerDensity * fuelMass * WattsLeftConfig.ElectricityScalar;
+        }
+
+        private string FormatTimeUntilBelowOutput(WattsLeftIsotope isotope, double peakOutputValue, double targetOutput)
+        {
+            if (isotope == null || peakOutputValue <= 0.0 || targetOutput <= 0.0)
+            {
+                return "n/a";
+            }
+
+            if (peakOutputValue <= targetOutput)
+            {
+                return "below at launch";
+            }
+
+            double targetFraction = targetOutput / peakOutputValue;
+
+            if (targetFraction < isotope.CutoffFraction)
+            {
+                targetFraction = isotope.CutoffFraction;
+            }
+
+            return FormatKerbinDuration(GetYearsUntilFraction(isotope, targetFraction));
+        }
+
         private void ClearSelectedIsotope(string status)
         {
             selectedIsotope = null;
@@ -191,6 +280,37 @@ namespace WattsLeft
 
 
         // b9 insanity
+        public override string GetInfo()
+        {
+            WattsLeftConfig.Load();
+
+            StringBuilder info = new StringBuilder();
+
+            info.AppendLine("<b>Watts Left RTG</b>");
+            info.AppendLine("Output decays over time.");
+            info.AppendLine("Isotope amount: " + isotopeVolume.ToString("0.###") + " kg");
+            info.AppendLine();
+
+            info.AppendLine("<color=#99ff00>Available isotopes:</color>");
+
+            foreach (WattsLeftIsotope isotope in WattsLeftConfig.Isotopes)
+            {
+                double peak = CalculateInfoPeakOutput(isotope);
+                double warningYears = GetYearsUntilFraction(isotope, isotope.WarningFraction);
+                double cutoffYears = GetYearsUntilFraction(isotope, isotope.CutoffFraction);
+
+                info.AppendLine();
+                info.AppendLine("<color=#ffcc66>" + isotope.Title + "</color>");
+                info.AppendLine("  Peak output: " + FormatOutput(peak));
+                info.AppendLine("  Half-life: " + FormatKerbinDuration(isotope.HalfLife));
+                info.AppendLine("  Nearing end of life: " + FormatKerbinDuration(warningYears));
+                info.AppendLine("  No usable output: " + FormatKerbinDuration(cutoffYears));
+                info.AppendLine("  Below " + FormatOutput(infoOutputThreshold) + ": " + FormatTimeUntilBelowOutput(isotope, peak, infoOutputThreshold));
+            }
+
+            return info.ToString();
+        }
+
         private void RefreshSelectedIsotope()
         {
             WattsLeftIsotope detectedIsotope = null;
