@@ -7,10 +7,22 @@ namespace WattsLeft
     public class ModuleWattsLeftRTG : PartModule
     {
         // status fields
-        [KSPField(guiName = "RTG Status", guiActive = true, guiActiveEditor = true)]
+        [KSPField(
+            guiName = "Status",
+            guiActive = true,
+            guiActiveEditor = true,
+            groupName = "WattsLeft",
+            groupDisplayName = "WattsLeft"
+        )]
         public string statusDisplay = "Loaded";
 
-        [KSPField(guiName = "Output", guiActive = true, guiActiveEditor = true)]
+        [KSPField(
+            guiName = "Output",
+            guiActive = true,
+            guiActiveEditor = true,
+            groupName = "WattsLeft",
+            groupDisplayName = "WattsLeft"
+        )]
         public string currentOutputDisplay = "n/a";
 
         // invisible utility fields
