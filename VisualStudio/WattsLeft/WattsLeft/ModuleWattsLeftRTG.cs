@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace WattsLeft
     {
         // editor info fields
         [KSPField]
-        public double isotopeVolume = 1.0;
+        public string b9ModuleID = "wattsLeftIsotope";
 
         [KSPField]
         public double infoOutputThreshold = 0.1;
@@ -52,6 +53,17 @@ namespace WattsLeft
         private float nextDisplayUpdateTime = 0f;
 
         // helpers
+        private double CalculatePeakOutput()
+        {
+            if (selectedIsotope == null || selectedResource == null)
+            {
+                return 0.0;
+            }
+
+            double fuelMass = selectedResource.maxAmount * selectedResourceDensity;
+            return selectedIsotope.PowerDensity * fuelMass;
+        }
+
         private double GetResourceDensity(string resourceName)
         {
             PartResourceDefinition definition = PartResourceLibrary.Instance.GetDefinition(resourceName);
@@ -65,15 +77,66 @@ namespace WattsLeft
             return definition.density;
         }
 
-        private double CalculatePeakOutput()
+        private double GetConfiguredIsotopeAmount()
         {
-            if (selectedIsotope == null || selectedResource == null)
+            double baseVolume;
+
+            if (TryGetB9BaseVolume(out baseVolume))
             {
-                return 0.0;
+                return baseVolume;
             }
 
-            double fuelMass = selectedResource.maxAmount * selectedResourceDensity;
-            return selectedIsotope.PowerDensity * fuelMass;
+            if (selectedResource != null && selectedResource.maxAmount > 0.0)
+            {
+                return selectedResource.maxAmount;
+            }
+
+            Debug.LogWarning("[WattsLeft] Could not determine B9 baseVolume for part info. Falling back to 1.0.");
+            return 1.0;
+        }
+
+        private bool TryGetB9BaseVolume(out double baseVolume)
+        {
+            baseVolume = 0.0;
+
+            if (part == null || part.partInfo == null || part.partInfo.partConfig == null)
+            {
+                return false;
+            }
+
+            ConfigNode[] moduleNodes = part.partInfo.partConfig.GetNodes("MODULE");
+
+            foreach (ConfigNode moduleNode in moduleNodes)
+            {
+                if (!moduleNode.HasValue("name") || moduleNode.GetValue("name") != "ModuleB9PartSwitch")
+                {
+                    continue;
+                }
+
+                string moduleID = moduleNode.HasValue("moduleID") ? moduleNode.GetValue("moduleID") : "";
+
+                if (!string.IsNullOrEmpty(b9ModuleID) && moduleID != b9ModuleID)
+                {
+                    continue;
+                }
+
+                if (!moduleNode.HasValue("baseVolume"))
+                {
+                    continue;
+                }
+
+                if (double.TryParse(
+                    moduleNode.GetValue("baseVolume"),
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out baseVolume
+                ) && baseVolume > 0.0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private double GetUsableOutput(double remainingFraction)
@@ -224,7 +287,7 @@ namespace WattsLeft
             return years.ToString("0.#") + " years";
         }
 
-        private double CalculateInfoPeakOutput(WattsLeftIsotope isotope)
+        private double CalculateInfoPeakOutput(WattsLeftIsotope isotope, double isotopeAmount)
         {
             if (isotope == null)
             {
@@ -238,7 +301,7 @@ namespace WattsLeft
                 return 0.0;
             }
 
-            double fuelMass = isotopeVolume * density;
+            double fuelMass = isotopeAmount * density;
             return isotope.PowerDensity * fuelMass * WattsLeftConfig.ElectricityScalar;
         }
 
@@ -285,17 +348,17 @@ namespace WattsLeft
             WattsLeftConfig.Load();
 
             StringBuilder info = new StringBuilder();
+            double isotopeAmount = GetConfiguredIsotopeAmount();
 
-            info.AppendLine("<b>Watts Left RTG</b>");
             info.AppendLine("Output decays over time.");
-            info.AppendLine("Isotope amount: " + isotopeVolume.ToString("0.###") + " kg");
+            info.AppendLine("Isotope amount: " + isotopeAmount.ToString("0.###") + " kg");
             info.AppendLine();
 
             info.AppendLine("<color=#99ff00>Available isotopes:</color>");
 
             foreach (WattsLeftIsotope isotope in WattsLeftConfig.Isotopes)
             {
-                double peak = CalculateInfoPeakOutput(isotope);
+                double peak = CalculateInfoPeakOutput(isotope, isotopeAmount);
                 double warningYears = GetYearsUntilFraction(isotope, isotope.WarningFraction);
                 double cutoffYears = GetYearsUntilFraction(isotope, isotope.CutoffFraction);
 
@@ -303,9 +366,8 @@ namespace WattsLeft
                 info.AppendLine("<color=#ffcc66>" + isotope.Title + "</color>");
                 info.AppendLine("  Peak output: " + FormatOutput(peak));
                 info.AppendLine("  Half-life: " + FormatKerbinDuration(isotope.HalfLife));
-                info.AppendLine("  Nearing end of life: " + FormatKerbinDuration(warningYears));
-                info.AppendLine("  No usable output: " + FormatKerbinDuration(cutoffYears));
                 info.AppendLine("  Below " + FormatOutput(infoOutputThreshold) + ": " + FormatTimeUntilBelowOutput(isotope, peak, infoOutputThreshold));
+                info.AppendLine("  No output after: " + FormatKerbinDuration(cutoffYears));
             }
 
             return info.ToString();
