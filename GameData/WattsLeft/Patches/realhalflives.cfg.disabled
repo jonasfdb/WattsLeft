@@ -4,15 +4,6 @@
 
 // This patch changes some power density amounts for balance on long-living isotopes too
 
-// The mod uses Kerbin year length as variable to calculate decay times
-// To match real world times the year length is patched to the legnth of an Earth year
-// Should be fine with RSS/RO and such, but you can comment this out
-// If you do that the mod will use the real-world year count but count a year as Kerbin years
-@WATTSLEFT_SETTINGS:NEEDS[WattsLeft]
-{
-    @KerbinYearSeconds = 31557600
-}
-
 // half life patching
 @WATTSLEFT_ISOTOPE[Blutonium238]:NEEDS[WattsLeft]
 {
