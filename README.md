@@ -65,3 +65,9 @@ When you have these installed, installation is fairly standard! Download the lat
 This project is licensed under the **Mozilla Public License 2.0 (MPL-2.0)**. See [`LICENSE`](./LICENSE) for the full text of the license. For a summary of the MPL-2.0, visit [choosealicense.com](https://choosealicense.com/licenses/mpl-2.0/).
 
 Watts Left is developed and maintained with love and care by me, jonasfdb <3. I can best be reached through Discord under the username **jonasfdb** if it is urgent. Otherwise, keep contact to Issues, Discussions and pull requests here.
+
+## Acknowledgements
+
+Watts Left is a spiritual successor to the original JDiminishingRTG by KwirkyJ, later maintained by linuxgurugamer. Since I built this one from the ground up, I can't really give credit under license, but the inspiration definitely came from there and Watts Left is a more modernized equivalent. Thanks!
+
+Thanks to my tester(s), Dwldjon!
