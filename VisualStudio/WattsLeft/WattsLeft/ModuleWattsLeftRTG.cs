@@ -168,7 +168,7 @@ namespace WattsLeft
 
             double now = Planetarium.GetUniversalTime();
             double elapsedSeconds = now - timeOfStart;
-            double halfLifeSeconds = selectedIsotope.HalfLife * WattsLeftConfig.KerbinYearSeconds;
+            double halfLifeSeconds = selectedIsotope.HalfLife * KSPUtil.dateTimeFormatter.Year;
 
             if (halfLifeSeconds <= 0.0)
             {
@@ -188,6 +188,16 @@ namespace WattsLeft
             }
 
             return fraction;
+        }
+
+        private double GetYearsUntilFraction(WattsLeftIsotope isotope, double fraction)
+        {
+            if (isotope == null || fraction <= 0.0 || fraction >= 1.0)
+            {
+                return 0.0;
+            }
+
+            return -isotope.HalfLife * Math.Log(fraction) / Math.Log(2.0);
         }
 
         private void UpdateDisplays(double remainingFraction)
@@ -247,18 +257,6 @@ namespace WattsLeft
         }
 
         // editor helpers
-        private const double KerbinDaySeconds = 21600.0;
-
-        private double GetYearsUntilFraction(WattsLeftIsotope isotope, double fraction)
-        {
-            if (isotope == null || fraction <= 0.0 || fraction >= 1.0)
-            {
-                return 0.0;
-            }
-
-            return -isotope.HalfLife * Math.Log(fraction) / Math.Log(2.0);
-        }
-
         private string FormatKerbinDuration(double years)
         {
             if (double.IsNaN(years) || double.IsInfinity(years) || years < 0.0)
@@ -266,12 +264,14 @@ namespace WattsLeft
                 return "n/a";
             }
 
-            double seconds = years * WattsLeftConfig.KerbinYearSeconds;
-            double days = seconds / KerbinDaySeconds;
+            double yearSeconds = KSPUtil.dateTimeFormatter.Year;
+            double daySeconds = KSPUtil.dateTimeFormatter.Day;
+            double seconds = years * yearSeconds;
+            double days = seconds / daySeconds;
 
             if (days < 1.0)
             {
-                return (days * 6.0).ToString("0.#") + " hours";
+                return (days * (yearSeconds / daySeconds)).ToString("0.#") + " hours";
             }
 
             if (years < 1.0)
