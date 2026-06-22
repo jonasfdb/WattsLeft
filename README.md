@@ -27,7 +27,7 @@ I want to include most modern part mods and I think this is a solid starting set
 
 ## Other Compatible Stuff
 
-#### Sol/RSS/RO?
+#### Sol/RSS/RO? ✅
 
 Watts Left is compatible with Sol, RSS and RO. It ships with optional patches for real isotope names and real-world half-lives, which are both recommended for a good experience with these mods. 
 
@@ -35,15 +35,15 @@ The patches can be found in ```GameData/WattsLeft/Patches```, and are ```realnam
 
 Names and half-lives are handled by separate patches, so stock players can use real-world isotope names without switching to Sol, RSS, or RO-style balance.
 
-#### Planet Packs?
+#### Planet Packs? ✅
 
 Watts Left is compatible with any other planet pack too, even those that change the Kerbin year length like Sol/RSS. The mod was specifically built with OPM players in mind, and the isotopes are balanced such that they provide a pleasant experience both in stock and with OPM.
 
-#### Kerbalism?
+#### Kerbalism? ⚠️
 
 Watts Left can be used in a Kerbalism installation, but will not output any radiation or use Kerbalism RTG efficiency. There may be incompatibilities, but it should be safe to play. No guarantees, though!
 
-#### Existing saves?
+#### Existing saves? ⚠️
 
 Watts Left is safe to add to existing saves, but any already existing RTGs will not have a selected isotope. The game will continue to treat them as unmodded and undying.
 
