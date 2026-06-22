@@ -1,8 +1,8 @@
 ## Watts Left
 
-Watts Left overhauls RTGs by letting you choose from a selection of nine isotopes, each with its own power output, half-life, and long-term behavior.
+Watts Left overhauls RTGs by letting you choose from a selection of isotopes, each with its own power output, half-life, and long-term behavior.
 
-The mod adds persistent decay simulation, including for unloaded vessels. As time passes, your RTGs gradually lose output, and once they can no longer produce usable power, they die. Long-duration mission planning becomes a very different challenge.
+The mod adds persistent decay simulation for the isotopes, including for unloaded vessels. As time passes, your RTGs gradually lose output, and once they can no longer produce usable power, they die. Long-duration mission planning becomes a very different challenge this way!
 
 ## Features
 
