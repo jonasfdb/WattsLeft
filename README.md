@@ -14,9 +14,9 @@ In short, Watts Left adds...
 - ...the ability for RTGs to die once below usable output
 - ...optional real isotope names and real half-life patches
 
-## Compatibility
+## Compatible Part Mods
 
-### Part Mods
+I want to include most modern part mods and I think this is a solid starting set. If you want more supported, let me know (see contact info below!). A supported mod in this case means that all RTGs included in it will use Watts Left.
 
 | Part Mod              | Status | Details                     |
 |-----------------------|--------|-----------------------------|
@@ -25,8 +25,7 @@ In short, Watts Left adds...
 | Tundra Exploration    | ✅      | All RTGs supported          |
 | Sterling Systems      | ⚠️      | Only betavoltaic generators for now, more is planned |
 
-
-### Other Compatible Stuff
+## Other Compatible Stuff
 
 #### Sol/RSS/RO?
 
@@ -43,10 +42,12 @@ Watts Left is compatible with any other planet pack too, even those that change 
 #### Kerbalism?
 
 Watts Left can be used in a Kerbalism installation, but will not output any radiation or use Kerbalism RTG efficiency. There may be incompatibilities, but it should be safe to play. No guarantees, though!
-### Existing saves?
+
+#### Existing saves?
+
 Watts Left is safe to add to existing saves, but any already existing RTGs will not have a selected isotope. The game will continue to treat them as unmodded and undying.
 
-### Absolutely Incompatible mods
+## Absolutely Incompatible mods
 - JDiminishingRTG
 
 ## Installation
