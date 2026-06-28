@@ -1,5 +1,8 @@
 ## Watts Left
 
+[![Available on - CKAN](https://img.shields.io/badge/Available_on-CKAN-cd0e0c?logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F9023970%3Fv%3D4)](https://https://github.com/KSP-CKAN/CKAN)
+[![For - 1.12.5](https://img.shields.io/badge/For-1.12.5-2ea44f)](https://)
+
 Watts Left overhauls RTGs by letting you choose from a selection of isotopes, each with its own power output, half-life, and long-term behavior.
 
 The mod adds persistent decay simulation for the isotopes, including for unloaded vessels. As time passes, your RTGs gradually lose output, and once they can no longer produce usable power, they die. Long-duration mission planning becomes a very different challenge this way!
