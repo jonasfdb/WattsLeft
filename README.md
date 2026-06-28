@@ -55,7 +55,9 @@ Watts Left is safe to add to existing saves, but any already existing RTGs will 
 
 ## Installation
 
-**A CKAN download is planned! Until then, you have to do the manual way:**
+**Watts Left is available on CKAN, the Comprehensive Kerbal Archive Network. Install it in just a few clicks!**
+
+If you don't use CKAN, do it manually. First, get the dependencies
 
 First, get the dependencies. There's only a few:
 - B9PartSwitch
